@@ -144,8 +144,51 @@ alias uts="utlyze_sync"
 # Export the Utlyze directory for other scripts
 export UTLYZE_MEM0_DIR="$UTLYZE_DIR"
 
+# Function to start activity monitor
+utlyze_monitor() {
+    if [ -z "$MEM0_API_KEY" ]; then
+        echo -e "${RED}Error: MEM0_API_KEY not set${NC}"
+        return 1
+    fi
+    
+    local cmd="${1:-start}"
+    
+    case "$cmd" in
+        start)
+            echo -e "${BLUE}Starting activity monitor...${NC}"
+            python3 "$UTLYZE_DIR/src/activity_monitor.py" --daemon
+            ;;
+        stop)
+            echo -e "${YELLOW}Stopping activity monitor...${NC}"
+            pkill -f "activity_monitor.py"
+            ;;
+        status)
+            if pgrep -f "activity_monitor.py" > /dev/null; then
+                echo -e "${GREEN}Activity monitor is running${NC}"
+            else
+                echo -e "${YELLOW}Activity monitor is not running${NC}"
+            fi
+            ;;
+        once)
+            echo -e "${BLUE}Running one-time activity sync...${NC}"
+            python3 "$UTLYZE_DIR/src/activity_monitor.py" --once
+            ;;
+        *)
+            echo "Usage: utlyze_monitor [start|stop|status|once]"
+            ;;
+    esac
+}
+
+# Auto-start activity monitor on shell init (if enabled)
+if [ -n "$UTLYZE_AUTO_MONITOR" ]; then
+    # Check if monitor is already running
+    if ! pgrep -f "activity_monitor.py" > /dev/null; then
+        utlyze_monitor start 2>/dev/null
+    fi
+fi
+
 # Show initialization message (only if interactive shell)
 if [[ $- == *i* ]]; then
     echo -e "${GREEN}✓ Utlyze Mem0 Integration Active${NC}"
-    echo -e "  Commands: ${BLUE}utx${NC} (show context), ${BLUE}uts${NC} (sync)"
+    echo -e "  Commands: ${BLUE}utx${NC} (show context), ${BLUE}uts${NC} (sync), ${BLUE}utlyze_monitor${NC} (activity monitor)"
 fi
