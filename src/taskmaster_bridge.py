@@ -165,8 +165,10 @@ async def handle_task_completion(task_data: Dict[str, Any]):
     This task is now complete and can be referenced for future similar tasks.
     """
     
+    # Use messages format for mem0 API
+    messages = [{"role": "user", "content": completion_memory}]
     mem0_client.client.add(
-        completion_memory,
+        messages,
         user_id="utlyze",
         metadata={
             "type": "task_completion",
@@ -186,8 +188,10 @@ async def add_file_context(task_data: Dict[str, Any]):
         Last Modified: {datetime.now().isoformat()}
         """
         
+        # Use messages format for mem0 API
+        messages = [{"role": "user", "content": file_memory}]
         mem0_client.client.add(
-            file_memory,
+            messages,
             user_id="utlyze",
             metadata={
                 "type": "file_activity",

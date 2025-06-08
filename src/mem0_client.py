@@ -47,7 +47,9 @@ class UtlyzeMem0Client:
             "status": task_data.get('status')
         }
         
-        result = self.client.add(memory_content, user_id=self.user_id, metadata=metadata)
+        # Use messages format for mem0 API
+        messages = [{"role": "user", "content": memory_content}]
+        result = self.client.add(messages, user_id=self.user_id, metadata=metadata)
         logger.info(f"Task update stored: {task_data.get('name')}")
         return result
     
@@ -67,7 +69,9 @@ class UtlyzeMem0Client:
             "timestamp": datetime.now().isoformat()
         }
         
-        result = self.client.add(memory_content, user_id=self.user_id, metadata=metadata)
+        # Use messages format for mem0 API
+        messages = [{"role": "user", "content": memory_content}]
+        result = self.client.add(messages, user_id=self.user_id, metadata=metadata)
         return result
     
     def get_current_context(self, limit: int = 10) -> List[Dict[str, Any]]:
@@ -121,8 +125,10 @@ class UtlyzeMem0Client:
         Sync Time: {datetime.now().isoformat()}
         """
         
+        # Use messages format for mem0 API
+        messages = [{"role": "user", "content": summary}]
         self.client.add(
-            summary,
+            messages,
             user_id=self.user_id,
             metadata={"type": "sync_summary", "timestamp": datetime.now().isoformat()}
         )

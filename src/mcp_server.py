@@ -183,8 +183,10 @@ class UtlyzeMem0MCPServer:
                     metadata["source"] = "mcp_cursor"
                     metadata["timestamp"] = datetime.now().isoformat()
                     
+                    # Use messages format for mem0 API
+                    messages = [{"role": "user", "content": content}]
                     result = self.mem0_client.client.add(
-                        content,
+                        messages,
                         user_id="utlyze",
                         metadata=metadata
                     )
@@ -225,8 +227,10 @@ class UtlyzeMem0MCPServer:
                     Source: Cursor/VSCode
                     """
                     
+                    # Use messages format for mem0 API
+                    messages = [{"role": "user", "content": memory_content}]
                     result = self.mem0_client.client.add(
-                        memory_content,
+                        messages,
                         user_id="utlyze",
                         metadata={
                             "type": "development_activity",
